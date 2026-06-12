@@ -1,0 +1,15 @@
+[
+  {
+    "name": "index (gzip, vue + core external)",
+    "path": "dist/index.js",
+    "limit": "2 kB",
+    "gzip": true,
+    "ignore": ["vue", "@vskstudio/takt-core"]
+  },
+  {
+    "name": "element (gzip, self-contained, bundles Vue runtime)",
+    "path": "dist/element/index.js",
+    "limit": "50 kB",
+    "gzip": true
+  }
+]
