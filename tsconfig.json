@@ -13,5 +13,5 @@
     "jsx": "preserve",
     "types": ["vitest/globals"]
   },
-  "include": ["src", "test", "env.d.ts", "*.config.ts"]
+  "include": ["src", "test", "env.d.ts", "*.config.ts", "e2e/*.spec.ts"]
 }

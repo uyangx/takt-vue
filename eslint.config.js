@@ -3,7 +3,15 @@ import vue from 'eslint-plugin-vue'
 import vueParser from 'vue-eslint-parser'
 
 export default [
-  { ignores: ['dist/**', 'node_modules/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/.vite/**',
+      '**/playwright-report/**',
+      '**/test-results/**',
+    ],
+  },
   ...tseslint.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
