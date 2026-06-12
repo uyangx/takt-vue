@@ -8,5 +8,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     environmentOptions: { jsdom: { url: 'https://example.com/' } },
+    // Unit tests live in test/; e2e/*.spec.ts belongs to Playwright.
+    include: ['test/**/*.test.ts'],
   },
 })
