@@ -19,5 +19,4 @@ export function defineTaktElement(): void {
   defined = true
 }
 
-// Side-effect registration on import (the documented default usage).
 defineTaktElement()
