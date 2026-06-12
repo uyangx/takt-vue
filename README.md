@@ -133,7 +133,7 @@ import '@vskstudio/takt-vue/element'
 <takt-analytics domain="example.com" outbound></takt-analytics>
 ```
 
-Boolean-style attributes (`outbound`, `files`) are presence flags. The privacy defaults stay on unless explicitly disabled — `spa`, `respect-dnt`, and `exclude-localhost` only turn off when set to `"false"` (or `"0"`):
+Boolean-style attributes (`outbound`, `files`) are presence flags — the element's `files` is presence-only (no extension allowlist; use the `<Takt>` component for that). The privacy defaults stay on unless explicitly disabled — `spa`, `respect-dnt`, and `exclude-localhost` only turn off when set to `"false"` (or `"0"`):
 
 ```html
 <takt-analytics domain="example.com" spa="false" respect-dnt="false"></takt-analytics>

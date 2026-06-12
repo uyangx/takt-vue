@@ -19,8 +19,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Exercise the Vue 3 support floor and the latest release.
-        vue: ['3.3.0', 'latest']
+        # Exercise the Vue 3 support floor and a current release. Both are
+        # pinned (no floating `latest`) so CI never resolves an unverified
+        # version outside the lockfile; bump the ceiling deliberately.
+        vue: ['3.3.0', '3.5.38']
     name: build (vue@${{ matrix.vue }})
     steps:
       # Third-party actions are pinned to a full commit SHA (supply-chain
