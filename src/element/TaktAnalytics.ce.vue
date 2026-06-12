@@ -22,7 +22,10 @@ const props = withDefaults(defineProps<Props>(), {
   excludeLocalhost: 'true',
 })
 
-const truthy = (v: string): boolean => v !== 'false' && v !== '0'
+// Coerce defensively: a consumer may set the property programmatically as a
+// boolean/number rather than a string attribute. Only explicit false-y spellings
+// disable; absence keeps the privacy default on.
+const truthy = (v: string): boolean => String(v) !== 'false' && String(v) !== '0'
 
 let disposers: VoidFunction[] = []
 

@@ -43,6 +43,17 @@ describe('SSR safety (node environment, no DOM globals)', () => {
     expect(() => mod.defineTaktElement()).not.toThrow()
   })
 
+  it('TaktPlugin.install registers the directive but skips bootstrap on the server', async () => {
+    const { TaktPlugin } = await import('../src/index')
+    const core = await import('@vskstudio/takt-core')
+    const directive = vi.fn()
+    const install = (TaktPlugin as { install: (app: unknown, options?: unknown) => void }).install
+    install({ directive }, { domain: 'exemple.fr' })
+    expect(directive).toHaveBeenCalledOnce()
+    // No window on the server → no instance is created.
+    expect(core.createTakt).not.toHaveBeenCalled()
+  })
+
   it('useTakt() returns a never-throwing no-op on the server', async () => {
     const { useTakt } = await import('../src/index')
     const takt = useTakt()

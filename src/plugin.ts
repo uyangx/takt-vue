@@ -15,13 +15,15 @@ export interface TaktPluginOptions extends Config {
  * single browser instance (pageview + autocapture), so a `<Takt>` component is
  * optional. Init is deferred off the server — `install` may run during SSR.
  */
-export const TaktPlugin: Plugin<TaktPluginOptions[]> = {
+export const TaktPlugin: Plugin<[TaktPluginOptions?]> = {
   install(app: App, options?: TaktPluginOptions) {
     app.directive('takt-event', vTaktEvent)
     if (!options || typeof window === 'undefined') return
 
     const { outbound = false, files = false, spa = true, ...config } = options
     const takt = createTakt(config)
+    // The bootstrapped instance lives for the app's lifetime; its autocapture
+    // disposers are intentionally not retained (use <Takt> for scoped teardown).
     if (spa) takt.enableSpa()
     if (outbound) takt.enableOutbound()
     if (files) takt.enableFiles(Array.isArray(files) ? files : undefined)

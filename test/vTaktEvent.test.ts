@@ -10,6 +10,7 @@ vi.mock('@vskstudio/takt-core', () => ({
 }))
 
 import { vTaktEvent } from '../src/directives/vTaktEvent'
+import { taktStore, type TaktInstance } from '../src/store'
 import TaktEventFixture from './fixtures/TaktEventFixture.vue'
 import * as core from '@vskstudio/takt-core'
 
@@ -30,7 +31,10 @@ function bind(el: HTMLElement, value: { name: string; props?: Record<string, str
 }
 
 describe('vTaktEvent directive', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    taktStore.value = null
+  })
 
   it('tracks on click with the configured name and props', () => {
     const node = document.createElement('button')
@@ -66,6 +70,24 @@ describe('vTaktEvent directive', () => {
     action.update({ name: 'B', props: { x: '1' } })
     node.click()
     expect(track).toHaveBeenCalledWith('B', { props: { x: '1' } })
+  })
+
+  it('routes through the active instance (set by <Takt>/plugin) when present', () => {
+    const instanceTrack = vi.fn()
+    taktStore.value = { track: instanceTrack } as unknown as TaktInstance
+    const node = document.createElement('button')
+    bind(node, { name: 'Scoped', props: { plan: 'pro' } })
+    node.click()
+    expect(instanceTrack).toHaveBeenCalledWith('Scoped', { props: { plan: 'pro' } })
+    // The core default-instance fallback must NOT also fire.
+    expect(track).not.toHaveBeenCalled()
+  })
+
+  it('falls back to core track() when no instance is published', () => {
+    const node = document.createElement('button')
+    bind(node, { name: 'Standalone' })
+    node.click()
+    expect(track).toHaveBeenCalledWith('Standalone', undefined)
   })
 
   it('removes the listener on unmount', () => {

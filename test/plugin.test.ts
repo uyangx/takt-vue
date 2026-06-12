@@ -1,0 +1,54 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+const { enableSpa, enableOutbound, enableFiles, pageview, createTakt } = vi.hoisted(() => {
+  const enableSpa = vi.fn(() => vi.fn())
+  const enableOutbound = vi.fn(() => vi.fn())
+  const enableFiles = vi.fn(() => vi.fn())
+  const pageview = vi.fn()
+  const instance = { enableSpa, enableOutbound, enableFiles, pageview, track: vi.fn(), optOut: vi.fn(), optIn: vi.fn() }
+  const createTakt = vi.fn(() => instance)
+  return { enableSpa, enableOutbound, enableFiles, pageview, createTakt }
+})
+vi.mock('@vskstudio/takt-core', () => ({ createTakt }))
+
+import { TaktPlugin } from '../src/plugin'
+import { vTaktEvent } from '../src/directives/vTaktEvent'
+import { taktStore } from '../src/store'
+
+function fakeApp() {
+  return { directive: vi.fn() }
+}
+
+// The Plugin union doesn't expose `.install` cleanly; narrow to the object form.
+const install = (TaktPlugin as { install: (app: unknown, options?: unknown) => void }).install
+
+describe('TaktPlugin', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    taktStore.value = null
+  })
+
+  it('always registers the v-takt-event directive', () => {
+    const app = fakeApp()
+    install(app)
+    expect(app.directive).toHaveBeenCalledWith('takt-event', vTaktEvent)
+  })
+
+  it('registers the directive but does NOT bootstrap when called without options', () => {
+    const app = fakeApp()
+    install(app)
+    expect(createTakt).not.toHaveBeenCalled()
+    expect(taktStore.value).toBeNull()
+  })
+
+  it('bootstraps a single instance when options are supplied', () => {
+    const app = fakeApp()
+    install(app, { domain: 'exemple.fr', outbound: true })
+    expect(createTakt).toHaveBeenCalledWith({ domain: 'exemple.fr' })
+    expect(enableSpa).toHaveBeenCalledTimes(1)
+    expect(enableOutbound).toHaveBeenCalledTimes(1)
+    expect(enableFiles).not.toHaveBeenCalled()
+    expect(pageview).toHaveBeenCalledTimes(1)
+    expect(taktStore.value).not.toBeNull()
+  })
+})

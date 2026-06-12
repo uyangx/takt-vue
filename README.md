@@ -81,7 +81,7 @@ function onSignup() {
 
 ## Declarative tracking — `v-takt-event`
 
-For simple click tracking, skip the handler and bind the directive. It is reactive — changing the bound value updates what gets tracked, and the listener is cleaned up on unmount:
+For simple **click** tracking, skip the handler and bind the directive. It is reactive — changing the bound value updates what gets tracked, and the listener is cleaned up on unmount. At click time it tracks through the active instance (the one provided by `<Takt>` or `TaktPlugin`), falling back to the core default instance if you drive `init()` directly:
 
 ```vue
 <script setup lang="ts">

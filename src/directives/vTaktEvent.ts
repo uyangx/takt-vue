@@ -1,10 +1,20 @@
-import { track } from '@vskstudio/takt-core'
+import { track as coreTrack } from '@vskstudio/takt-core'
 import type { TrackOptions } from '@vskstudio/takt-core'
 import type { Directive } from 'vue'
+import { resolveTakt } from '../store'
 
 // Derives props/revenue from core's TrackOptions so the wire shape stays in sync.
 export interface TaktEventParams extends TrackOptions {
   name: string
+}
+
+// Tracks through the active instance, resolved at click time. Prefers the
+// instance published by <Takt> / TaktPlugin (via the module store), and falls
+// back to core's default instance for users who drive `init()` directly.
+function emit(name: string, opts?: TrackOptions): void {
+  const instance = resolveTakt()
+  if (instance) instance.track(name, opts)
+  else coreTrack(name, opts)
 }
 
 const PARAMS = Symbol('takt-params')
@@ -26,7 +36,7 @@ export const vTaktEvent: Directive<Bound, TaktEventParams> = {
       const opts: TrackOptions = {}
       if (current.props) opts.props = current.props
       if (current.revenue) opts.revenue = current.revenue
-      track(current.name, Object.keys(opts).length ? opts : undefined)
+      emit(current.name, Object.keys(opts).length ? opts : undefined)
     }
     el[HANDLER] = handler
     el.addEventListener('click', handler)
