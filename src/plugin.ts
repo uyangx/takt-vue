@@ -4,9 +4,20 @@ import { vTaktEvent } from './directives/vTaktEvent'
 import { taktStore } from './store'
 
 export interface TaktPluginOptions extends Config {
+  /** Auto-track outbound link clicks. */
   outbound?: boolean
+  /** Auto-track file downloads. Pass an array to restrict to those extensions. */
   files?: boolean | string[]
+  /** Track SPA navigations. Defaults to `true`. */
   spa?: boolean
+}
+
+// Type the globally-registered `v-takt-event` directive in consumer templates
+// (Vue 3.4+ `GlobalDirectives`; an additive no-op on older versions).
+declare module 'vue' {
+  interface GlobalDirectives {
+    vTaktEvent: typeof vTaktEvent
+  }
 }
 
 /**

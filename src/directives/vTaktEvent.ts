@@ -3,8 +3,12 @@ import type { TrackOptions } from '@vskstudio/takt-core'
 import type { Directive } from 'vue'
 import { resolveTakt } from '../store'
 
-// Derives props/revenue from core's TrackOptions so the wire shape stays in sync.
+/**
+ * Binding value for the `v-takt-event` directive. Extends core's `TrackOptions`
+ * (`props`, `revenue`) so the wire shape stays in sync, plus the event `name`.
+ */
 export interface TaktEventParams extends TrackOptions {
+  /** The custom event name to track on click. */
   name: string
 }
 
@@ -25,8 +29,18 @@ type Bound = HTMLElement & {
   [HANDLER]?: () => void
 }
 
-// Vue directive: tracks a custom event on click. Reactive — updating the bound
-// value changes the tracked name/props/revenue; the listener is removed on unmount.
+/**
+ * Directive for declarative click tracking.
+ *
+ * ```vue
+ * <button v-takt-event="{ name: 'Signup', props: { plan: 'pro' } }">Subscribe</button>
+ * ```
+ *
+ * Reactive — updating the bound value changes the tracked name/props/revenue,
+ * and the click listener is removed on unmount. At click time it tracks through
+ * the active instance published by `<Takt>` / `TaktPlugin`, falling back to
+ * core's default instance for an `init()`-driven setup.
+ */
 export const vTaktEvent: Directive<Bound, TaktEventParams> = {
   mounted(el, binding) {
     el[PARAMS] = binding.value

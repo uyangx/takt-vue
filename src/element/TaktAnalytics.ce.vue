@@ -2,6 +2,8 @@
 import { onBeforeUnmount, onMounted } from 'vue'
 import { createTakt } from '@vskstudio/takt-core'
 
+defineOptions({ name: 'TaktAnalytics' })
+
 interface Props {
   domain?: string
   endpoint?: string

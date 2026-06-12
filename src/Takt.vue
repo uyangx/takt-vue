@@ -3,13 +3,22 @@ import { onBeforeUnmount, onMounted } from 'vue'
 import { createTakt } from '@vskstudio/takt-core'
 import { provideTakt, taktStore } from './store'
 
+defineOptions({ name: 'Takt' })
+
 interface Props {
+  /** Site identifier sent with every event. Defaults to `location.hostname`. */
   domain?: string
+  /** Ingestion endpoint. Defaults to `/api/event`. */
   endpoint?: string
+  /** Auto-track outbound link clicks. */
   outbound?: boolean
+  /** Auto-track file downloads. Pass an array to restrict to those extensions. */
   files?: boolean | string[]
+  /** Track SPA navigations (history pushState/replaceState + popstate). */
   spa?: boolean
+  /** Suppress events when the browser's Do Not Track is enabled. */
   respectDnt?: boolean
+  /** Suppress events on localhost and private IP ranges. */
   excludeLocalhost?: boolean
 }
 

@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "description": "Idiomatic Vue 3 wrapper for Takt privacy-friendly analytics",
   "license": "MIT",
+  "author": "VSK Studio",
   "type": "module",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/element/index.js",
+  "jsdelivr": "./dist/element/index.js",
   "sideEffects": [
     "./dist/element/index.js"
   ],
@@ -52,6 +56,9 @@
     "size": "size-limit",
     "prepublishOnly": "pnpm build",
     "release": "pnpm build && changeset publish"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "peerDependencies": {
     "@vskstudio/takt-core": ">=0.2.0",
