@@ -156,7 +156,9 @@ import { TaktBadge, TaktEmbed } from '@vskstudio/takt-vue'
 </template>
 ```
 
-`TaktBadge` renders an `<img>` (`variant` `a`/`b`/`d`, `glyph` `unplug`/`dash`/`off`/`eyeoff`, `lang` `fr`/`en`). `TaktEmbed` renders an `<iframe>` (`theme` `light`/`dark`/`auto`, `width` 404, `height` 264, `title` "takt"). Both accept `host` to point at a custom Takt instance.
+`TaktBadge` renders an `<img>` (`variant` `a`/`b`/`d`, `glyph` `unplug`/`dash`/`off`/`eyeoff`, `lang` `fr`/`en`). `TaktEmbed` renders an `<iframe>` (`theme` `light`/`dark`/`auto`, `width` 404, `height` 264, `title` "takt", `referrerpolicy` "strict-origin-when-cross-origin"). Both accept `host` to point at a custom Takt instance.
+
+`host` must be an absolute `http(s)` URL (validated by core).
 
 Read public stats with `createStats`:
 

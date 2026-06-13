@@ -47,8 +47,9 @@ describe('SSR safety (node environment, no DOM globals)', () => {
     const { TaktPlugin } = await import('../src/index')
     const core = await import('@vskstudio/takt-core')
     const directive = vi.fn()
+    const component = vi.fn()
     const install = (TaktPlugin as { install: (app: unknown, options?: unknown) => void }).install
-    install({ directive }, { domain: 'exemple.fr' })
+    install({ directive, component }, { domain: 'exemple.fr' })
     expect(directive).toHaveBeenCalledOnce()
     // No window on the server → no instance is created.
     expect(core.createTakt).not.toHaveBeenCalled()

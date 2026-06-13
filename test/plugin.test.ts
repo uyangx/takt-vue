@@ -9,14 +9,20 @@ const { enableSpa, enableOutbound, enableFiles, pageview, createTakt } = vi.hois
   const createTakt = vi.fn(() => instance)
   return { enableSpa, enableOutbound, enableFiles, pageview, createTakt }
 })
-vi.mock('@vskstudio/takt-core', () => ({ createTakt }))
+vi.mock('@vskstudio/takt-core', () => ({
+  createTakt,
+  badgeUrl: vi.fn(() => 'https://h/badge.svg'),
+  embedUrl: vi.fn(() => 'https://h/embed'),
+}))
 
 import { TaktPlugin } from '../src/plugin'
 import { vTaktEvent } from '../src/directives/vTaktEvent'
+import TaktBadge from '../src/TaktBadge.vue'
+import TaktEmbed from '../src/TaktEmbed.vue'
 import { taktStore } from '../src/store'
 
 function fakeApp() {
-  return { directive: vi.fn() }
+  return { directive: vi.fn(), component: vi.fn() }
 }
 
 // The Plugin union doesn't expose `.install` cleanly; narrow to the object form.
@@ -32,6 +38,13 @@ describe('TaktPlugin', () => {
     const app = fakeApp()
     install(app)
     expect(app.directive).toHaveBeenCalledWith('takt-event', vTaktEvent)
+  })
+
+  it('registers the TaktBadge and TaktEmbed components globally', () => {
+    const app = fakeApp()
+    install(app)
+    expect(app.component).toHaveBeenCalledWith('TaktBadge', TaktBadge)
+    expect(app.component).toHaveBeenCalledWith('TaktEmbed', TaktEmbed)
   })
 
   it('registers the directive but does NOT bootstrap when called without options', () => {

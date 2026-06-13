@@ -1,5 +1,11 @@
 # @vskstudio/takt-vue
 
+## 0.3.1
+
+### Patch Changes
+
+- Lock widget iframe with a default `referrerpolicy` and register `TaktBadge`/`TaktEmbed` globally in the plugin.
+
 ## 0.3.0
 
 ### Minor Changes

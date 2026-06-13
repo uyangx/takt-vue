@@ -2,6 +2,8 @@ import type { App, Plugin } from 'vue'
 import { createTakt, type Config } from '@vskstudio/takt-core'
 import { vTaktEvent } from './directives/vTaktEvent'
 import { taktStore } from './store'
+import TaktBadge from './TaktBadge.vue'
+import TaktEmbed from './TaktEmbed.vue'
 
 export interface TaktPluginOptions extends Config {
   /** Auto-track outbound link clicks. */
@@ -29,6 +31,8 @@ declare module 'vue' {
 export const TaktPlugin: Plugin<[TaktPluginOptions?]> = {
   install(app: App, options?: TaktPluginOptions) {
     app.directive('takt-event', vTaktEvent)
+    app.component('TaktBadge', TaktBadge)
+    app.component('TaktEmbed', TaktEmbed)
     if (!options || typeof window === 'undefined') return
 
     const { outbound = false, files = false, spa = true, ...config } = options
