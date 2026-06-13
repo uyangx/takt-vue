@@ -141,6 +141,32 @@ Boolean-style attributes (`outbound`, `files`) are presence flags — the elemen
 
 `defineTaktElement()` is also exported for explicit, idempotent registration. The bundle is SSR-safe: importing it on the server is a no-op until `customElements` exists.
 
+## Widgets
+
+Thin wrappers over the server-rendered badge SVG and embed iframe. Both take a `domain`; everything else is optional.
+
+```vue
+<script setup lang="ts">
+import { TaktBadge, TaktEmbed } from '@vskstudio/takt-vue'
+</script>
+
+<template>
+  <TaktBadge domain="exemple.fr" variant="d" />
+  <TaktEmbed domain="exemple.fr" theme="dark" />
+</template>
+```
+
+`TaktBadge` renders an `<img>` (`variant` `a`/`b`/`d`, `glyph` `unplug`/`dash`/`off`/`eyeoff`, `lang` `fr`/`en`). `TaktEmbed` renders an `<iframe>` (`theme` `light`/`dark`/`auto`, `width` 404, `height` 264, `title` "takt"). Both accept `host` to point at a custom Takt instance.
+
+Read public stats with `createStats`:
+
+```ts
+import { createStats } from '@vskstudio/takt-vue'
+
+const stats = createStats({ domain: 'exemple.fr' })
+const summary = await stats.summary({ period: '7d' })
+```
+
 ## SSR / Nuxt
 
 Every entry is import-safe on the server — no module-load access to `window`, `document`, or `customElements`. The component defers all browser work to `onMounted`, `useTakt()` returns a no-op during the server pass, and the custom element only registers in the browser.

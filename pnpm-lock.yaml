@@ -21,8 +21,8 @@ importers:
         specifier: ^5.1.0
         version: 5.2.4(vite@5.4.21(@types/node@12.20.55))(vue@3.5.38(typescript@5.9.3))
       '@vskstudio/takt-core':
-        specifier: ^0.2.0
-        version: 0.2.1
+        specifier: ^0.3.0
+        version: 0.3.0
       '@vue/test-utils':
         specifier: ^2.4.0
         version: 2.4.11(@vue/compiler-dom@3.5.38)(@vue/server-renderer@3.5.38(vue@3.5.38(typescript@5.9.3)))(vue@3.5.38(typescript@5.9.3))
@@ -889,8 +889,9 @@ packages:
   '@volar/typescript@2.4.28':
     resolution: {integrity: sha512-Ja6yvWrbis2QtN4ClAKreeUZPVYMARDYZl9LMEv1iQ1QdepB6wn0jTRxA9MftYmYa4DQ4k/DaSZpFPUfxl8giw==}
 
-  '@vskstudio/takt-core@0.2.1':
-    resolution: {integrity: sha512-JnVfVXHJp5U7rZ5pNW27PLpgun677it05S8gazRa6HkDnyn5Q3k9XuYpCUeBTX83HvyQ4J9tNlOTN2E9ri+UwQ==}
+  '@vskstudio/takt-core@0.3.0':
+    resolution: {integrity: sha512-Gu+bnI0RSJWaHYQeDH2D/ZFIfmFveXlsBY4INRDNNZvAs5nV86ra286ChsLEeZstrLbGhQQQqZDpb4arDNkJ5Q==}
+    engines: {node: '>=18'}
 
   '@vue/compiler-core@3.5.38':
     resolution: {integrity: sha512-s99aGxWYig9ErHbct27KXEGhrBYlRI6c4MwAgXErOAbX9xiW37/uMa+XUDO69zLz83dng8UUZ70CTOJrLrYrEQ==}
@@ -3064,7 +3065,7 @@ snapshots:
       path-browserify: 1.0.1
       vscode-uri: 3.1.0
 
-  '@vskstudio/takt-core@0.2.1': {}
+  '@vskstudio/takt-core@0.3.0': {}
 
   '@vue/compiler-core@3.5.38':
     dependencies:
