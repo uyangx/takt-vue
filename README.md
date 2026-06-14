@@ -156,9 +156,9 @@ import { TaktBadge, TaktEmbed } from '@vskstudio/takt-vue'
 </template>
 ```
 
-`TaktBadge` renders an `<img>` (`variant` `a`/`b`/`d`, `glyph` `unplug`/`dash`/`off`/`eyeoff`, `lang` `fr`/`en`). `TaktEmbed` renders an `<iframe>` (`theme` `light`/`dark`/`auto`, `width` 404, `height` 264, `title` "takt", `referrerpolicy` "strict-origin-when-cross-origin"). Both accept `host` to point at a custom Takt instance.
+`TaktBadge` renders an `<img>` (`variant` `a`/`b`/`d`, `glyph` `unplug`/`dash`/`off`/`eyeoff`, `lang` `fr`/`en`, `alt` overridable, default "takt"). `TaktEmbed` renders an `<iframe>` (`theme` `light`/`dark`/`auto`, `width` 404, `height` 264, `title` "takt"). The embed iframe is sandboxed (`sandbox="allow-scripts allow-same-origin"`) and its `referrerpolicy` is locked to `strict-origin-when-cross-origin` — it is no longer configurable. Both accept `host` to point at a custom Takt instance.
 
-`host` must be an absolute `http(s)` URL (validated by core).
+`host` must be an absolute `http(s)` URL (validated by core, which reduces it to its origin — any path or query is dropped). An empty `host` targets the same origin.
 
 Read public stats with `createStats`:
 
