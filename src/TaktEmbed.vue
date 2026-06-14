@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type IframeHTMLAttributes } from 'vue'
+import { computed } from 'vue'
 import { embedUrl, type EmbedTheme, type WidgetLang } from '@vskstudio/takt-core'
 
 defineOptions({ name: 'TaktEmbed' })
@@ -19,15 +19,12 @@ interface Props {
   height?: number | string
   /** Iframe title (accessibility). */
   title?: string
-  /** Iframe referrer policy. */
-  referrerpolicy?: IframeHTMLAttributes['referrerpolicy']
 }
 
 const props = withDefaults(defineProps<Props>(), {
   width: 404,
   height: 264,
   title: 'takt',
-  referrerpolicy: 'strict-origin-when-cross-origin',
 })
 
 const src = computed(() =>
@@ -41,7 +38,8 @@ const src = computed(() =>
     :width="width"
     :height="height"
     :title="title"
-    :referrerpolicy="referrerpolicy"
+    referrerpolicy="strict-origin-when-cross-origin"
+    sandbox="allow-scripts allow-same-origin"
     loading="lazy"
     :style="{ border: 0 }"
   />
