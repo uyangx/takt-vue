@@ -15,9 +15,11 @@ interface Props {
   lang?: WidgetLang
   /** Override the Takt host (defaults to the public host). */
   host?: string
+  /** Image alt text (accessibility). */
+  alt?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { alt: 'takt' })
 
 const src = computed(() =>
   badgeUrl(props.domain, { host: props.host, variant: props.variant, glyph: props.glyph, lang: props.lang }),
@@ -25,5 +27,5 @@ const src = computed(() =>
 </script>
 
 <template>
-  <img :src="src" alt="takt" loading="lazy" decoding="async" />
+  <img :src="src" :alt="alt" loading="lazy" decoding="async" />
 </template>
