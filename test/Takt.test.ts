@@ -27,6 +27,7 @@ describe('<Takt>', () => {
     expect(createTakt).toHaveBeenCalledWith({
       domain: 'exemple.fr',
       endpoint: '/api/event',
+      scriptOrigin: undefined,
       respectDnt: true,
       excludeLocalhost: true,
     })
@@ -35,6 +36,13 @@ describe('<Takt>', () => {
     expect(enableFiles).not.toHaveBeenCalled()
     expect(pageview).toHaveBeenCalledTimes(1)
     expect(taktStore.value).not.toBeNull()
+  })
+
+  it('forwards scriptOrigin to the core', () => {
+    mount(Takt, { props: { domain: 'exemple.fr', scriptOrigin: 'https://t.exemple.fr' } })
+    expect(createTakt).toHaveBeenCalledWith(
+      expect.objectContaining({ scriptOrigin: 'https://t.exemple.fr' }),
+    )
   })
 
   it('enables only the toggled features and passes a file extension list', () => {

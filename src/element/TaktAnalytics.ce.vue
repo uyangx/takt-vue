@@ -7,6 +7,7 @@ defineOptions({ name: 'TaktAnalytics' })
 interface Props {
   domain?: string
   endpoint?: string
+  scriptOrigin?: string
   outbound?: boolean
   files?: boolean
   // String, not Boolean: an absent attribute must keep the JS default 'true'.
@@ -35,6 +36,7 @@ onMounted(() => {
   const takt = createTakt({
     domain: props.domain,
     endpoint: props.endpoint,
+    scriptOrigin: props.scriptOrigin,
     respectDnt: truthy(props.respectDnt),
     excludeLocalhost: truthy(props.excludeLocalhost),
   })

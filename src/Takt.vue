@@ -10,6 +10,8 @@ interface Props {
   domain?: string
   /** Ingestion endpoint. Defaults to `/api/event`. */
   endpoint?: string
+  /** First-party origin to derive the endpoint from (`{origin}/api/event`). `endpoint` wins over it. */
+  scriptOrigin?: string
   /** Auto-track outbound link clicks. */
   outbound?: boolean
   /** Auto-track file downloads. Pass an array to restrict to those extensions. */
@@ -34,8 +36,8 @@ const store = provideTakt()
 let disposers: VoidFunction[] = []
 
 onMounted(() => {
-  const { domain, endpoint, respectDnt, excludeLocalhost, spa, outbound, files } = props
-  const takt = createTakt({ domain, endpoint, respectDnt, excludeLocalhost })
+  const { domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, spa, outbound, files } = props
+  const takt = createTakt({ domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost })
   if (spa) disposers.push(takt.enableSpa())
   if (outbound) disposers.push(takt.enableOutbound())
   if (files) disposers.push(takt.enableFiles(Array.isArray(files) ? files : undefined))
