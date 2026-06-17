@@ -67,6 +67,13 @@ describe('<takt-analytics> boot behavior', () => {
     expect(enableOutbound).toHaveBeenCalledTimes(1)
   })
 
+  it('forwards script-origin to the core (kebab attr maps to camel prop)', async () => {
+    await boot({ domain: 'exemple.fr', 'script-origin': 'https://t.example.com' })
+    expect(createTakt).toHaveBeenCalledWith(
+      expect.objectContaining({ scriptOrigin: 'https://t.example.com' }),
+    )
+  })
+
   it('with spa="false": enableSpa is NOT called but pageview still fires', async () => {
     await boot({ domain: 'exemple.fr', spa: 'false' })
     expect(enableSpa).not.toHaveBeenCalled()
