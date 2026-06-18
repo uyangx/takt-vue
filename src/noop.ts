@@ -21,5 +21,6 @@ export function noopTakt(): TaktInstance {
     enableSpa: disposer,
     enableOutbound: disposer,
     enableFiles: disposer,
+    enable404: disposer,
   } as unknown as TaktInstance
 }

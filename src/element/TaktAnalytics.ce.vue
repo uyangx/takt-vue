@@ -10,6 +10,7 @@ interface Props {
   scriptOrigin?: string
   outbound?: boolean
   files?: boolean
+  track404?: boolean
   // String, not Boolean: an absent attribute must keep the JS default 'true'.
   // A Boolean prop coerces absence to false, silently disabling privacy defaults.
   spa?: string
@@ -20,6 +21,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   outbound: false,
   files: false,
+  track404: false,
   spa: 'true',
   respectDnt: 'true',
   excludeLocalhost: 'true',
@@ -43,6 +45,7 @@ onMounted(() => {
   if (truthy(props.spa)) disposers.push(takt.enableSpa())
   if (props.outbound) disposers.push(takt.enableOutbound())
   if (props.files) disposers.push(takt.enableFiles())
+  if (props.track404) disposers.push(takt.enable404())
   takt.pageview()
 })
 

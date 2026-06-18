@@ -77,6 +77,7 @@ function onSignup() {
 | `spa` | `boolean` | `true` | Track SPA navigations (history + popstate) |
 | `outbound` | `boolean` | `false` | Auto-track outbound link clicks |
 | `files` | `boolean \| string[]` | `false` | Auto-track file downloads (optionally an extension allowlist) |
+| `track404` | `boolean` | `false` | Report a `404` event when the page is an error page (`[data-takt-404]` / `<meta name="takt:404">` marker, or a 404 HTTP status) |
 | `respectDnt` | `boolean` | `true` | Suppress events when Do Not Track is on |
 | `excludeLocalhost` | `boolean` | `true` | Suppress events on localhost / private IPs |
 

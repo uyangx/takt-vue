@@ -2,14 +2,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 
 // Mock the core so tests assert wiring, never real requests.
-const { enableSpa, enableOutbound, enableFiles, pageview, createTakt } = vi.hoisted(() => {
+const { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt } = vi.hoisted(() => {
   const enableSpa = vi.fn(() => vi.fn())
   const enableOutbound = vi.fn(() => vi.fn())
   const enableFiles = vi.fn(() => vi.fn())
+  const enable404 = vi.fn(() => vi.fn())
   const pageview = vi.fn()
-  const instance = { enableSpa, enableOutbound, enableFiles, pageview, track: vi.fn(), optOut: vi.fn(), optIn: vi.fn() }
+  const instance = { enableSpa, enableOutbound, enableFiles, enable404, pageview, track: vi.fn(), optOut: vi.fn(), optIn: vi.fn() }
   const createTakt = vi.fn(() => instance)
-  return { enableSpa, enableOutbound, enableFiles, pageview, createTakt }
+  return { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt }
 })
 vi.mock('@vskstudio/takt-core', () => ({ createTakt }))
 
@@ -34,6 +35,7 @@ describe('<Takt>', () => {
     expect(enableSpa).toHaveBeenCalledTimes(1)
     expect(enableOutbound).not.toHaveBeenCalled()
     expect(enableFiles).not.toHaveBeenCalled()
+    expect(enable404).not.toHaveBeenCalled()
     expect(pageview).toHaveBeenCalledTimes(1)
     expect(taktStore.value).not.toBeNull()
   })
@@ -55,6 +57,13 @@ describe('<Takt>', () => {
   it('files=true enables file tracking with no extension list (default set)', () => {
     mount(Takt, { props: { domain: 'exemple.fr', files: true } })
     expect(enableFiles).toHaveBeenCalledWith(undefined)
+  })
+
+  it('enables 404 tracking only when track404 is set', () => {
+    mount(Takt, { props: { domain: 'exemple.fr' } })
+    expect(enable404).not.toHaveBeenCalled()
+    mount(Takt, { props: { domain: 'exemple.fr', track404: true } })
+    expect(enable404).toHaveBeenCalledTimes(1)
   })
 
   it('disposes every enabled feature on unmount', () => {

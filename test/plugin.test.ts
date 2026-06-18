@@ -1,13 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const { enableSpa, enableOutbound, enableFiles, pageview, createTakt } = vi.hoisted(() => {
+const { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt } = vi.hoisted(() => {
   const enableSpa = vi.fn(() => vi.fn())
   const enableOutbound = vi.fn(() => vi.fn())
   const enableFiles = vi.fn(() => vi.fn())
+  const enable404 = vi.fn(() => vi.fn())
   const pageview = vi.fn()
-  const instance = { enableSpa, enableOutbound, enableFiles, pageview, track: vi.fn(), optOut: vi.fn(), optIn: vi.fn() }
+  const instance = { enableSpa, enableOutbound, enableFiles, enable404, pageview, track: vi.fn(), optOut: vi.fn(), optIn: vi.fn() }
   const createTakt = vi.fn(() => instance)
-  return { enableSpa, enableOutbound, enableFiles, pageview, createTakt }
+  return { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt }
 })
 vi.mock('@vskstudio/takt-core', () => ({
   createTakt,
@@ -61,7 +62,14 @@ describe('TaktPlugin', () => {
     expect(enableSpa).toHaveBeenCalledTimes(1)
     expect(enableOutbound).toHaveBeenCalledTimes(1)
     expect(enableFiles).not.toHaveBeenCalled()
+    expect(enable404).not.toHaveBeenCalled()
     expect(pageview).toHaveBeenCalledTimes(1)
     expect(taktStore.value).not.toBeNull()
+  })
+
+  it('enables 404 tracking when track404 is set', () => {
+    const app = fakeApp()
+    install(app, { domain: 'exemple.fr', track404: true })
+    expect(enable404).toHaveBeenCalledTimes(1)
   })
 })

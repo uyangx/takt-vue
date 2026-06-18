@@ -12,6 +12,8 @@ export interface TaktPluginOptions extends Config {
   files?: boolean | string[]
   /** Track SPA navigations. Defaults to `true`. */
   spa?: boolean
+  /** Report a `404` event when the page is an error page (`[data-takt-404]` / `<meta name="takt:404">` marker, or a 404 HTTP status). */
+  track404?: boolean
 }
 
 // Type the globally-registered `v-takt-event` directive in consumer templates
@@ -35,13 +37,14 @@ export const TaktPlugin: Plugin<[TaktPluginOptions?]> = {
     app.component('TaktEmbed', TaktEmbed)
     if (!options || typeof window === 'undefined') return
 
-    const { outbound = false, files = false, spa = true, ...config } = options
+    const { outbound = false, files = false, spa = true, track404 = false, ...config } = options
     const takt = createTakt(config)
     // The bootstrapped instance lives for the app's lifetime; its autocapture
     // disposers are intentionally not retained (use <Takt> for scoped teardown).
     if (spa) takt.enableSpa()
     if (outbound) takt.enableOutbound()
     if (files) takt.enableFiles(Array.isArray(files) ? files : undefined)
+    if (track404) takt.enable404()
     takt.pageview()
     taktStore.value = takt
   },

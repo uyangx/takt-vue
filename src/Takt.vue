@@ -18,6 +18,8 @@ interface Props {
   files?: boolean | string[]
   /** Track SPA navigations (history pushState/replaceState + popstate). */
   spa?: boolean
+  /** Report a `404` event when the page is an error page (`[data-takt-404]` / `<meta name="takt:404">` marker, or a 404 HTTP status). */
+  track404?: boolean
   /** Suppress events when the browser's Do Not Track is enabled. */
   respectDnt?: boolean
   /** Suppress events on localhost and private IP ranges. */
@@ -28,6 +30,7 @@ const props = withDefaults(defineProps<Props>(), {
   outbound: false,
   files: false,
   spa: true,
+  track404: false,
   respectDnt: true,
   excludeLocalhost: true,
 })
@@ -36,11 +39,12 @@ const store = provideTakt()
 let disposers: VoidFunction[] = []
 
 onMounted(() => {
-  const { domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, spa, outbound, files } = props
+  const { domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, spa, outbound, files, track404 } = props
   const takt = createTakt({ domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost })
   if (spa) disposers.push(takt.enableSpa())
   if (outbound) disposers.push(takt.enableOutbound())
   if (files) disposers.push(takt.enableFiles(Array.isArray(files) ? files : undefined))
+  if (track404) disposers.push(takt.enable404())
   takt.pageview()
 
   store.value = takt
