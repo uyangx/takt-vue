@@ -45,6 +45,8 @@ const props = withDefaults(defineProps<Props>(), {
   track404: false,
   respectDnt: true,
   excludeLocalhost: true,
+  // Vue caste un prop Boolean absent en `false` ; sans ce défaut le kill-switch s'activerait tout seul.
+  enabled: true,
 })
 
 const store = provideTakt()

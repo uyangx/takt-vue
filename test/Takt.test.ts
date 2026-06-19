@@ -43,6 +43,16 @@ describe('<Takt>', () => {
     expect(taktStore.value).not.toBeNull()
   })
 
+  it('defaults enabled to true when the prop is absent (Vue would cast it to false)', () => {
+    mount(Takt, { props: { domain: 'exemple.fr', endpoint: '/api/event' } })
+    expect(createTakt).toHaveBeenCalledWith(expect.objectContaining({ enabled: true }))
+  })
+
+  it('honors enabled=false as an explicit kill-switch', () => {
+    mount(Takt, { props: { domain: 'exemple.fr', endpoint: '/api/event', enabled: false } })
+    expect(createTakt).toHaveBeenCalledWith(expect.objectContaining({ enabled: false }))
+  })
+
   it('forwards scriptOrigin to the core', () => {
     mount(Takt, { props: { domain: 'exemple.fr', scriptOrigin: 'https://t.exemple.fr' } })
     expect(createTakt).toHaveBeenCalledWith(
