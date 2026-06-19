@@ -1,24 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock core: createTakt returns spies so tests assert wiring, never real reqs.
-const { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt } = vi.hoisted(() => {
+const { enableSpa, enableOutbound, enableFiles, enable404, enableTagged, pageview, createTakt } = vi.hoisted(() => {
   const enableSpa = vi.fn(() => vi.fn())
   const enableOutbound = vi.fn(() => vi.fn())
   const enableFiles = vi.fn(() => vi.fn())
   const enable404 = vi.fn(() => vi.fn())
+  const enableTagged = vi.fn(() => vi.fn())
   const pageview = vi.fn()
   const instance = {
     enableSpa,
     enableOutbound,
     enableFiles,
     enable404,
+    enableTagged,
     pageview,
     track: vi.fn(),
     optOut: vi.fn(),
     optIn: vi.fn(),
   }
   const createTakt = vi.fn(() => instance)
-  return { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt }
+  return { enableSpa, enableOutbound, enableFiles, enable404, enableTagged, pageview, createTakt }
 })
 vi.mock('@vskstudio/takt-core', () => ({ createTakt }))
 
@@ -101,5 +103,46 @@ describe('<takt-analytics> boot behavior', () => {
     el.remove()
     await Promise.resolve()
     expect(spaDispose).toHaveBeenCalledTimes(1)
+  })
+
+  it('sample-rate="0.5" forwards numeric sampleRate to createTakt', async () => {
+    await boot({ domain: 'exemple.fr', 'sample-rate': '0.5' })
+    expect(createTakt).toHaveBeenCalledWith(expect.objectContaining({ sampleRate: 0.5 }))
+  })
+
+  it('track-query attribute forwards trackQuery: true to createTakt', async () => {
+    await boot({ domain: 'exemple.fr', 'track-query': '' })
+    expect(createTakt).toHaveBeenCalledWith(expect.objectContaining({ trackQuery: true }))
+  })
+
+  it('query-params="utm_source, utm_medium" forwards trimmed array to createTakt', async () => {
+    await boot({ domain: 'exemple.fr', 'query-params': 'utm_source, utm_medium' })
+    expect(createTakt).toHaveBeenCalledWith(
+      expect.objectContaining({ queryParams: ['utm_source', 'utm_medium'] }),
+    )
+  })
+
+  it('enabled="false" forwards enabled: false to createTakt', async () => {
+    await boot({ domain: 'exemple.fr', enabled: 'false' })
+    expect(createTakt).toHaveBeenCalledWith(expect.objectContaining({ enabled: false }))
+  })
+
+  it('tagged attribute present: enableTagged is called; absent: not called', async () => {
+    await boot({ domain: 'exemple.fr', tagged: '' })
+    expect(enableTagged).toHaveBeenCalledTimes(1)
+    vi.clearAllMocks()
+    document.body.innerHTML = ''
+    await boot({ domain: 'exemple.fr' })
+    expect(enableTagged).not.toHaveBeenCalled()
+  })
+
+  it('tagged="false" does NOT call enableTagged', async () => {
+    await boot({ domain: 'exemple.fr', tagged: 'false' })
+    expect(enableTagged).not.toHaveBeenCalled()
+  })
+
+  it('tagged="0" does NOT call enableTagged', async () => {
+    await boot({ domain: 'exemple.fr', tagged: '0' })
+    expect(enableTagged).not.toHaveBeenCalled()
   })
 })

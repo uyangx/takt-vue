@@ -80,6 +80,12 @@ function onSignup() {
 | `track404` | `boolean` | `false` | Report a `404` event when the page is an error page (`[data-takt-404]` / `<meta name="takt:404">` marker, or a 404 HTTP status) |
 | `respectDnt` | `boolean` | `true` | Suppress events when Do Not Track is on |
 | `excludeLocalhost` | `boolean` | `true` | Suppress events on localhost / private IPs |
+| `enabled` | `boolean` | `true` | Master kill-switch — set to `false` to disable all tracking without removing the component |
+| `sampleRate` | `number` | `1` | Fraction of sessions to track (0–1) |
+| `trackQuery` | `boolean` | `false` | Include the query string in tracked URLs |
+| `queryParams` | `string[]` | — | Query parameters to preserve when `trackQuery` is false |
+| `scrubUrl` | `(url: string) => string` | — | Transform the URL before it is sent (function prop / dev-controlled only — cannot be set as an HTML attribute on `<takt-analytics>`) |
+| `tagged` | `boolean` | `false` | Auto-track elements with the `data-takt` attribute |
 
 ## Declarative tracking — `v-takt-event`
 
