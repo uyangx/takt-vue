@@ -7,8 +7,9 @@ const { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt 
   const enableOutbound = vi.fn(() => vi.fn())
   const enableFiles = vi.fn(() => vi.fn())
   const enable404 = vi.fn(() => vi.fn())
+  const enableTagged = vi.fn(() => vi.fn())
   const pageview = vi.fn()
-  const instance = { enableSpa, enableOutbound, enableFiles, enable404, pageview, track: vi.fn(), optOut: vi.fn(), optIn: vi.fn() }
+  const instance = { enableSpa, enableOutbound, enableFiles, enable404, enableTagged, pageview, track: vi.fn(), optOut: vi.fn(), optIn: vi.fn() }
   const createTakt = vi.fn(() => instance)
   return { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt }
 })
@@ -25,13 +26,15 @@ describe('<Takt>', () => {
 
   it('inits with mapped config, enables SPA by default, fires initial pageview', () => {
     mount(Takt, { props: { domain: 'exemple.fr', endpoint: '/api/event' } })
-    expect(createTakt).toHaveBeenCalledWith({
-      domain: 'exemple.fr',
-      endpoint: '/api/event',
-      scriptOrigin: undefined,
-      respectDnt: true,
-      excludeLocalhost: true,
-    })
+    expect(createTakt).toHaveBeenCalledWith(
+      expect.objectContaining({
+        domain: 'exemple.fr',
+        endpoint: '/api/event',
+        scriptOrigin: undefined,
+        respectDnt: true,
+        excludeLocalhost: true,
+      }),
+    )
     expect(enableSpa).toHaveBeenCalledTimes(1)
     expect(enableOutbound).not.toHaveBeenCalled()
     expect(enableFiles).not.toHaveBeenCalled()

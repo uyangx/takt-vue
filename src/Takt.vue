@@ -24,6 +24,18 @@ interface Props {
   respectDnt?: boolean
   /** Suppress events on localhost and private IP ranges. */
   excludeLocalhost?: boolean
+  /** Master kill-switch: set to `false` to disable all tracking without removing the component. */
+  enabled?: boolean
+  /** Fraction of sessions to track (0–1). Defaults to 1 (all sessions). */
+  sampleRate?: number
+  /** Include the query string in tracked URLs. */
+  trackQuery?: boolean
+  /** Query parameters to preserve when `trackQuery` is false. */
+  queryParams?: string[]
+  /** Transform the URL before it is sent (dev/controlled use only). */
+  scrubUrl?: (url: string) => string
+  /** Auto-track elements with the `data-takt` attribute. */
+  tagged?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -39,12 +51,13 @@ const store = provideTakt()
 let disposers: VoidFunction[] = []
 
 onMounted(() => {
-  const { domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, spa, outbound, files, track404 } = props
-  const takt = createTakt({ domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost })
+  const { domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, spa, outbound, files, track404, enabled, sampleRate, trackQuery, queryParams, scrubUrl, tagged } = props
+  const takt = createTakt({ domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, enabled, sampleRate, trackQuery, queryParams, scrubUrl })
   if (spa) disposers.push(takt.enableSpa())
   if (outbound) disposers.push(takt.enableOutbound())
   if (files) disposers.push(takt.enableFiles(Array.isArray(files) ? files : undefined))
   if (track404) disposers.push(takt.enable404())
+  if (tagged) disposers.push(takt.enableTagged())
   takt.pageview()
 
   store.value = takt
