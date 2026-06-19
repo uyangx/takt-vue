@@ -60,7 +60,7 @@ onMounted(() => {
   if (props.outbound) disposers.push(takt.enableOutbound())
   if (props.files) disposers.push(takt.enableFiles())
   if (props.track404) disposers.push(takt.enable404())
-  if (props.tagged != null) disposers.push(takt.enableTagged())
+  if (props.tagged != null && truthy(props.tagged)) disposers.push(takt.enableTagged())
   takt.pageview()
 })
 

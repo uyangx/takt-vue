@@ -135,4 +135,14 @@ describe('<takt-analytics> boot behavior', () => {
     await boot({ domain: 'exemple.fr' })
     expect(enableTagged).not.toHaveBeenCalled()
   })
+
+  it('tagged="false" does NOT call enableTagged', async () => {
+    await boot({ domain: 'exemple.fr', tagged: 'false' })
+    expect(enableTagged).not.toHaveBeenCalled()
+  })
+
+  it('tagged="0" does NOT call enableTagged', async () => {
+    await boot({ domain: 'exemple.fr', tagged: '0' })
+    expect(enableTagged).not.toHaveBeenCalled()
+  })
 })
