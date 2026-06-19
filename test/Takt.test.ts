@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 
 // Mock the core so tests assert wiring, never real requests.
-const { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt } = vi.hoisted(() => {
+const { enableSpa, enableOutbound, enableFiles, enable404, enableTagged, pageview, createTakt } = vi.hoisted(() => {
   const enableSpa = vi.fn(() => vi.fn())
   const enableOutbound = vi.fn(() => vi.fn())
   const enableFiles = vi.fn(() => vi.fn())
@@ -11,7 +11,7 @@ const { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt 
   const pageview = vi.fn()
   const instance = { enableSpa, enableOutbound, enableFiles, enable404, enableTagged, pageview, track: vi.fn(), optOut: vi.fn(), optIn: vi.fn() }
   const createTakt = vi.fn(() => instance)
-  return { enableSpa, enableOutbound, enableFiles, enable404, pageview, createTakt }
+  return { enableSpa, enableOutbound, enableFiles, enable404, enableTagged, pageview, createTakt }
 })
 vi.mock('@vskstudio/takt-core', () => ({ createTakt }))
 
@@ -79,6 +79,15 @@ describe('<Takt>', () => {
     expect(spaDispose).toHaveBeenCalledTimes(1)
     expect(outboundDispose).toHaveBeenCalledTimes(1)
     expect(taktStore.value).toBeNull()
+  })
+
+  it('enables tagged tracking when tagged prop is set', () => {
+    const taggedDispose = vi.fn()
+    enableTagged.mockReturnValueOnce(taggedDispose)
+    const wrapper = mount(Takt, { props: { domain: 'exemple.fr', tagged: true } })
+    expect(enableTagged).toHaveBeenCalledTimes(1)
+    wrapper.unmount()
+    expect(taggedDispose).toHaveBeenCalledTimes(1)
   })
 
   it('renders default slot content', () => {

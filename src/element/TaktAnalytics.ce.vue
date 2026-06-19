@@ -41,6 +41,7 @@ let disposers: VoidFunction[] = []
 
 onMounted(() => {
   const parsedSampleRate = props.sampleRate != null ? parseFloat(props.sampleRate) : undefined
+  const finiteSampleRate = Number.isFinite(parsedSampleRate) ? parsedSampleRate : undefined
   const parsedQueryParams = props.queryParams
     ? props.queryParams.split(',').map((s) => s.trim()).filter(Boolean)
     : undefined
@@ -52,7 +53,7 @@ onMounted(() => {
     respectDnt: truthy(props.respectDnt),
     excludeLocalhost: truthy(props.excludeLocalhost),
     ...(props.enabled != null && { enabled: truthy(props.enabled) }),
-    ...(parsedSampleRate != null && { sampleRate: parsedSampleRate }),
+    ...(finiteSampleRate != null && { sampleRate: finiteSampleRate }),
     ...(props.trackQuery != null && { trackQuery: truthy(props.trackQuery) }),
     ...(parsedQueryParams?.length && { queryParams: parsedQueryParams }),
   })
