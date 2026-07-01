@@ -32,6 +32,8 @@ interface Props {
   trackQuery?: boolean
   /** Query parameters to preserve when `trackQuery` is false. */
   queryParams?: string[]
+  /** Path prefixes never tracked, e.g. ['/app','/account']. Segment-bounded: '/app' matches '/app' and '/app/…' but not '/application'. */
+  exclude?: string[]
   /** Transform the URL before it is sent (dev/controlled use only). */
   scrubUrl?: (url: string) => string
   /** Auto-track elements with the `data-takt` attribute. */
@@ -53,8 +55,8 @@ const store = provideTakt()
 let disposers: VoidFunction[] = []
 
 onMounted(() => {
-  const { domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, spa, outbound, files, track404, enabled, sampleRate, trackQuery, queryParams, scrubUrl, tagged } = props
-  const takt = createTakt({ domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, enabled, sampleRate, trackQuery, queryParams, scrubUrl })
+  const { domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, spa, outbound, files, track404, enabled, sampleRate, trackQuery, queryParams, exclude, scrubUrl, tagged } = props
+  const takt = createTakt({ domain, endpoint, scriptOrigin, respectDnt, excludeLocalhost, enabled, sampleRate, trackQuery, queryParams, exclude, scrubUrl })
   if (spa) disposers.push(takt.enableSpa())
   if (outbound) disposers.push(takt.enableOutbound())
   if (files) disposers.push(takt.enableFiles(Array.isArray(files) ? files : undefined))

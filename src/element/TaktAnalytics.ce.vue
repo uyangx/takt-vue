@@ -20,6 +20,7 @@ interface Props {
   sampleRate?: string
   trackQuery?: string
   queryParams?: string
+  exclude?: string
   tagged?: string
 }
 
@@ -45,6 +46,9 @@ onMounted(() => {
   const parsedQueryParams = props.queryParams
     ? props.queryParams.split(',').map((s) => s.trim()).filter(Boolean)
     : undefined
+  const parsedExclude = props.exclude
+    ? props.exclude.split(',').map((s) => s.trim()).filter(Boolean)
+    : undefined
 
   const takt = createTakt({
     domain: props.domain,
@@ -56,6 +60,7 @@ onMounted(() => {
     ...(finiteSampleRate != null && { sampleRate: finiteSampleRate }),
     ...(props.trackQuery != null && { trackQuery: truthy(props.trackQuery) }),
     ...(parsedQueryParams?.length && { queryParams: parsedQueryParams }),
+    ...(parsedExclude?.length && { exclude: parsedExclude }),
   })
   if (truthy(props.spa)) disposers.push(takt.enableSpa())
   if (props.outbound) disposers.push(takt.enableOutbound())
