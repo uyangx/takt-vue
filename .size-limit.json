@@ -7,9 +7,9 @@
     "ignore": ["vue", "@vskstudio/takt-core"]
   },
   {
-    "name": "element (gzip, self-contained, bundles Vue runtime)",
+    "name": "element (gzip, self-contained, plain HTMLElement)",
     "path": "dist/element/index.js",
-    "limit": "50 kB",
+    "limit": "4.5 kB",
     "gzip": true
   }
 ]

@@ -1,12 +1,6 @@
-import { defineCustomElement } from 'vue'
-import TaktAnalytics from './TaktAnalytics.ce.vue'
+import { createTaktAnalyticsElement } from './TaktAnalyticsElement'
 
 const TAG = 'takt-analytics'
-
-// `.ce.vue` compiles in custom-element mode; defineCustomElement returns a real
-// HTMLElement subclass (styles inlined into the shadow root).
-const TaktAnalyticsElement = defineCustomElement(TaktAnalytics)
-
 let defined = false
 
 /**
@@ -15,7 +9,7 @@ let defined = false
  */
 export function defineTaktElement(): void {
   if (defined || typeof customElements === 'undefined') return
-  if (!customElements.get(TAG)) customElements.define(TAG, TaktAnalyticsElement)
+  if (!customElements.get(TAG)) customElements.define(TAG, createTaktAnalyticsElement())
   defined = true
 }
 
