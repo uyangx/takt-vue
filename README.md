@@ -84,6 +84,7 @@ function onSignup() {
 | `sampleRate` | `number` | `1` | Fraction of sessions to track (0–1) |
 | `trackQuery` | `boolean` | `false` | Include the query string in tracked URLs |
 | `queryParams` | `string[]` | — | Query parameters to preserve when `trackQuery` is false |
+| `exclude` | `string[]` | — | Path prefixes never tracked, e.g. `['/app', '/account']` (segment-bounded, checked at send time) |
 | `scrubUrl` | `(url: string) => string` | — | Transform the URL before it is sent (function prop / dev-controlled only — cannot be set as an HTML attribute on `<takt-analytics>`) |
 | `tagged` | `boolean` | `false` | Auto-track elements with the `data-takt` attribute |
 
