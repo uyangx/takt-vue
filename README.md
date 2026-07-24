@@ -2,6 +2,8 @@
 
 # @vskstudio/takt-vue
 
+
+> 📚 **Documentation** — [taktlytics.com/docs/wrappers/vue](https://taktlytics.com/docs/wrappers/vue)
 **Idiomatic Vue 3 wrapper for [Takt](https://github.com/vskstudio/takt-core) privacy-friendly analytics.**
 
 [![npm version](https://img.shields.io/npm/v/@vskstudio/takt-vue?color=42b883&logo=npm)](https://www.npmjs.com/package/@vskstudio/takt-vue)
