@@ -42,7 +42,11 @@ export function createTaktAnalyticsElement(): CustomElementConstructor {
       if (truthy(attr('spa'))) this.disposers.push(takt.enableSpa())
       if (this.hasAttribute('outbound')) this.disposers.push(takt.enableOutbound())
       if (this.hasAttribute('files')) this.disposers.push(takt.enableFiles())
-      if (this.hasAttribute('track404')) this.disposers.push(takt.enable404())
+      // `track-404` aligne la graphie sur les autres attributs multi-mots ;
+      // `track404` reste accepté pour ne pas casser les intégrations existantes.
+      if (this.hasAttribute('track-404') || this.hasAttribute('track404')) {
+        this.disposers.push(takt.enable404())
+      }
       const tagged = attr('tagged')
       if (tagged !== null && truthy(tagged)) this.disposers.push(takt.enableTagged())
       takt.pageview()

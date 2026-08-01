@@ -36,7 +36,7 @@ interface Props {
   exclude?: string[]
   /** Transform the URL before it is sent (dev/controlled use only). */
   scrubUrl?: (url: string) => string
-  /** Auto-track elements with the `data-takt` attribute. */
+  /** Auto-track clicks on elements carrying `data-takt-event` (props read from `data-takt-prop-*`). */
   tagged?: boolean
 }
 

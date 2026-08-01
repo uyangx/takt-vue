@@ -1,5 +1,23 @@
 # @vskstudio/takt-vue
 
+## 0.6.3
+
+### Patch Changes
+
+- Fix the `useTakt()` no-op instance: it was missing `enableTagged`, so calling it
+  before `<Takt>` mounted (or during SSR) threw a `TypeError` instead of doing
+  nothing. The no-op is now typed against the full public instance surface, so a
+  method added to the core fails the build rather than leaking to runtime.
+- Accept `track-404` on `<takt-analytics>`, matching the kebab-case of every other
+  multi-word attribute (`respect-dnt`, `exclude-localhost`, `script-origin`,
+  `sample-rate`, `track-query`, `query-params`). The historical `track404` spelling
+  keeps working.
+- README realigned with the code: real default `endpoint`
+  (`https://taktlytics.com/api/event`), `useTakt()` resolution timing, the no-op's
+  one-time console warning, the components and `createStats` the plugin/entry also
+  expose, the Vue-free `/element` bundle and its attribute table, `[data-takt-event]`
+  as the tagged autocapture selector, and the peer dependency ranges.
+
 ## 0.6.2
 
 ### Patch Changes

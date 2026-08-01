@@ -18,10 +18,11 @@
 A thin, SSR-safe Vue 3 layer over [`@vskstudio/takt-core`](https://www.npmjs.com/package/@vskstudio/takt-core). It never changes the wire payload or the privacy guarantees — it just makes Takt feel native in a Vue app.
 
 - **`<Takt>` component** — drop it once near the root; it boots analytics after mount and provides the instance to the tree.
-- **`useTakt()` composable** — grab the live instance anywhere; returns a never-throwing no-op before mount or during SSR.
+- **`useTakt()` composable** — grab the live instance anywhere; returns a never-throwing no-op (which warns once in the console) before mount or during SSR.
 - **`v-takt-event` directive** — declarative click tracking, reactive to its binding.
-- **`TaktPlugin`** — one-line global install (`app.use`), registers the directive and (optionally) bootstraps a single instance.
-- **`<takt-analytics>` custom element** — framework-agnostic, self-contained embed for non-Vue pages.
+- **`TaktPlugin`** — one-line global install (`app.use`); registers the directive plus the `TaktBadge` / `TaktEmbed` components, and (optionally) bootstraps a single instance.
+- **`<takt-analytics>` custom element** — framework-agnostic, self-contained embed for non-Vue pages, with no Vue runtime.
+- **`createStats()`** — re-exported from the core to read public stats.
 
 ## Install
 
@@ -29,7 +30,7 @@ A thin, SSR-safe Vue 3 layer over [`@vskstudio/takt-core`](https://www.npmjs.com
 pnpm add @vskstudio/takt-vue @vskstudio/takt-core
 ```
 
-`vue` (`^3.3`) and `@vskstudio/takt-core` are peer dependencies.
+`vue` (`^3.3.0`) and `@vskstudio/takt-core` (`>=0.8.1`) are peer dependencies.
 
 ## Quick start — component + composable
 
@@ -47,16 +48,14 @@ import { Takt } from '@vskstudio/takt-vue'
 </template>
 ```
 
-Then track custom events from any descendant component:
+Then track custom events from any descendant component. Call `useTakt()` **inside the handler**, not in `setup`:
 
 ```vue
 <script setup lang="ts">
 import { useTakt } from '@vskstudio/takt-vue'
 
-const takt = useTakt()
-
 function onSignup() {
-  takt.track('Signup', {
+  useTakt().track('Signup', {
     props: { plan: 'pro' },
     revenue: { amount: '29.00', currency: 'EUR' },
   })
@@ -68,14 +67,18 @@ function onSignup() {
 </template>
 ```
 
-`useTakt()` resolves the instance provided by `<Takt>`. Called before mount (or on the server) it returns a safe no-op that never throws, so it is always safe to call.
+`useTakt()` resolves the instance and never throws: when none is available yet it returns a no-op that swallows every call and warns once in the console.
+
+`<Takt>` only publishes its instance in `onMounted`, which runs **after** the `setup` of its descendants. So `const takt = useTakt()` at the top of a child `setup` captures the no-op and keeps it forever — resolve the instance at call time instead (in the event handler, or in an `onMounted` hook of your own). The one exception is `app.use(TaktPlugin, options)`: it creates the instance synchronously during install, before anything mounts, so a `setup`-level `useTakt()` already sees the live instance in that setup.
 
 ### Component props
+
+All 16 props below are forwarded to the core; core's `debug` is the only option `<Takt>` does not expose.
 
 | Prop | Type | Default | Effect |
 | --- | --- | --- | --- |
 | `domain` | `string` | `location.hostname` | Site identifier sent with every event |
-| `endpoint` | `string` | `/api/event` | Ingestion endpoint |
+| `endpoint` | `string` | `https://taktlytics.com/api/event` | Ingestion endpoint — pass `/api/event` for a same-origin first-party proxy |
 | `scriptOrigin` | `string` | — | First-party origin to derive the endpoint from (`{origin}/api/event`) — your Takt domain or a custom domain to dodge ad-blockers (endpoint wins over it) |
 | `spa` | `boolean` | `true` | Track SPA navigations (history + popstate) |
 | `outbound` | `boolean` | `false` | Auto-track outbound link clicks |
@@ -89,7 +92,7 @@ function onSignup() {
 | `queryParams` | `string[]` | — | Query parameters to preserve when `trackQuery` is false |
 | `exclude` | `string[]` | — | Path prefixes never tracked, e.g. `['/app', '/account']` (segment-bounded, checked at send time) |
 | `scrubUrl` | `(url: string) => string` | — | Transform the URL before it is sent (function prop / dev-controlled only — cannot be set as an HTML attribute on `<takt-analytics>`) |
-| `tagged` | `boolean` | `false` | Auto-track elements with the `data-takt` attribute |
+| `tagged` | `boolean` | `false` | Auto-track clicks on elements carrying `data-takt-event="Name"` (props read from `data-takt-prop-*`) |
 
 ## Declarative tracking — `v-takt-event`
 
@@ -114,12 +117,12 @@ import { vTaktEvent } from '@vskstudio/takt-vue'
 The directive and the core functions are also available from the `./directives` subpath if you prefer a functional import:
 
 ```ts
-import { vTaktEvent, track, pageview, optOut, optIn } from '@vskstudio/takt-vue/directives'
+import { vTaktEvent, init, track, pageview, optOut, optIn } from '@vskstudio/takt-vue/directives'
 ```
 
 ## Plugin install
 
-`app.use(TaktPlugin)` registers `v-takt-event` globally so you can use it without a per-component import. Pass options to also bootstrap a single instance (pageview + autocapture) without a `<Takt>` component:
+`app.use(TaktPlugin)` registers `v-takt-event` and the `TaktBadge` / `TaktEmbed` components globally, so you can use all three without a per-component import. Pass options to also bootstrap a single instance (pageview + autocapture) without a `<Takt>` component:
 
 ```ts
 import { createApp } from 'vue'
@@ -131,11 +134,13 @@ createApp(App)
   .mount('#app')
 ```
 
-Installing without options registers only the directive — use `<Takt>` for instance lifecycle in that case. Instance bootstrapping is skipped on the server.
+Options are the core `Config` plus `outbound`, `files`, `spa` (default `true`) and `track404` — `tagged` is component-only. The instance is created synchronously during install and lives for the app's lifetime (its autocapture disposers are not retained; use `<Takt>` when you need scoped teardown).
+
+Installing without options registers only the directive and the widget components — use `<Takt>` for instance lifecycle in that case. Instance bootstrapping is also skipped on the server.
 
 ## Custom element (no Vue required)
 
-For non-Vue pages, import the `./element` subpath once. It registers `<takt-analytics>` (a self-contained custom element that bundles its own Vue runtime — no build step or import map needed) as a side effect:
+For non-Vue pages, import the `./element` subpath once. It registers `<takt-analytics>`, a self-contained custom element written as a plain `HTMLElement` — the core is bundled in, no Vue runtime, no build step or import map needed:
 
 ```ts
 import '@vskstudio/takt-vue/element'
@@ -145,7 +150,25 @@ import '@vskstudio/takt-vue/element'
 <takt-analytics domain="example.com" outbound></takt-analytics>
 ```
 
-Boolean-style attributes (`outbound`, `files`) are presence flags — the element's `files` is presence-only (no extension allowlist; use the `<Takt>` component for that). The privacy defaults stay on unless explicitly disabled — `spa`, `respect-dnt`, and `exclude-localhost` only turn off when set to `"false"` (or `"0"`):
+| Attribute | Maps to | Notes |
+| --- | --- | --- |
+| `domain` | `domain` | |
+| `endpoint` | `endpoint` | |
+| `script-origin` | `scriptOrigin` | |
+| `respect-dnt` | `respectDnt` | On unless `"false"` / `"0"` |
+| `exclude-localhost` | `excludeLocalhost` | On unless `"false"` / `"0"` |
+| `enabled` | `enabled` | Only read when the attribute is present |
+| `sample-rate` | `sampleRate` | Ignored when not a number |
+| `track-query` | `trackQuery` | Only read when the attribute is present |
+| `query-params` | `queryParams` | Comma-separated list |
+| `exclude` | `exclude` | Comma-separated list |
+| `spa` | `enableSpa()` | On unless `"false"` / `"0"` |
+| `outbound` | `enableOutbound()` | Presence flag |
+| `files` | `enableFiles()` | Presence flag, no extension allowlist (use `<Takt>` for that) |
+| `track-404` | `enable404()` | Presence flag; legacy spelling `track404` still accepted |
+| `tagged` | `enableTagged()` | Present and not `"false"` / `"0"` |
+
+`scrubUrl` is a function option and has no attribute equivalent. The privacy defaults stay on unless explicitly disabled — `spa`, `respect-dnt`, and `exclude-localhost` only turn off when set to `"false"` (or `"0"`):
 
 ```html
 <takt-analytics domain="example.com" spa="false" respect-dnt="false"></takt-analytics>
@@ -168,9 +191,9 @@ import { TaktBadge, TaktEmbed } from '@vskstudio/takt-vue'
 </template>
 ```
 
-`TaktBadge` renders an `<img>` (`variant` `a`/`b`/`d`, `glyph` `unplug`/`dash`/`off`/`eyeoff`, `lang` `fr`/`en`, `alt` overridable, default "takt"). `TaktEmbed` renders an `<iframe>` (`theme` `light`/`dark`/`auto`, `width` 404, `height` 264, `title` "takt"). The embed iframe is sandboxed (`sandbox="allow-scripts allow-same-origin"`) and its `referrerpolicy` is locked to `strict-origin-when-cross-origin` — it is no longer configurable. Both accept `host` to point at a custom Takt instance.
+`TaktBadge` renders an `<img>` (`variant` `a`/`b`/`d` — default `a`, `glyph` `unplug`/`dash`/`off`/`eyeoff`, `lang` `fr`/`en` — default `fr`, `alt` overridable, default "takt"). `TaktEmbed` renders an `<iframe>` (`theme` `light`/`dark`/`auto` — default `light`, `lang` `fr`/`en` — default `fr`, `width` 404, `height` 264, `title` "takt"). The embed iframe is sandboxed (`sandbox="allow-scripts allow-same-origin"`) and its `referrerpolicy` is locked to `strict-origin-when-cross-origin` — it is no longer configurable. Both accept `host` to point at a custom Takt instance.
 
-`host` must be an absolute `http(s)` URL (validated by core, which reduces it to its origin — any path or query is dropped). An empty `host` targets the same origin.
+`host` must be an absolute `http(s)` URL (validated by core, which reduces it to its origin — any path or query is dropped). Omitted or empty, it falls back to the hosted Takt origin (`https://taktlytics.com`).
 
 Read public stats with `createStats`:
 

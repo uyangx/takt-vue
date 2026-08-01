@@ -76,6 +76,18 @@ describe('<takt-analytics> boot behavior', () => {
     expect(enable404).toHaveBeenCalledTimes(1)
   })
 
+  // Graphie kebab-case alignée sur les autres attributs multi-mots ; l'ancienne
+  // graphie collée reste acceptée pour ne pas casser les intégrations.
+  it('with track-404 attribute present: enable404 is called', async () => {
+    await boot({ domain: 'exemple.fr', 'track-404': '' })
+    expect(enable404).toHaveBeenCalledTimes(1)
+  })
+
+  it('without any 404 attribute: enable404 is not called', async () => {
+    await boot({ domain: 'exemple.fr' })
+    expect(enable404).not.toHaveBeenCalled()
+  })
+
   it('forwards script-origin to the core (kebab attr maps to camel prop)', async () => {
     await boot({ domain: 'exemple.fr', 'script-origin': 'https://t.example.com' })
     expect(createTakt).toHaveBeenCalledWith(
