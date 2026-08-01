@@ -31,4 +31,33 @@ describe('store / useTakt', () => {
     taktStore.value = fake
     expect(useTakt()).toBe(fake)
   })
+
+  // Chaque autocapture activable par <Takt> / TaktPlugin doit être inerte sur le
+  // no-op : `tagged` levait un TypeError faute d'`enableTagged`.
+  it.each(['enableSpa', 'enableOutbound', 'enableFiles', 'enable404', 'enableTagged'] as const)(
+    'the no-op exposes %s and returns a disposer',
+    (method) => {
+      const takt = useTakt()
+      expect(typeof takt[method]).toBe('function')
+      const dispose = takt[method]()
+      expect(typeof dispose).toBe('function')
+      expect(() => dispose()).not.toThrow()
+    },
+  )
+
+  it('the no-op covers the whole public instance surface', () => {
+    const takt = useTakt()
+    const surface = [
+      'track',
+      'pageview',
+      'optOut',
+      'optIn',
+      'enableSpa',
+      'enableOutbound',
+      'enableFiles',
+      'enable404',
+      'enableTagged',
+    ] as const
+    for (const method of surface) expect(typeof takt[method]).toBe('function')
+  })
 })
